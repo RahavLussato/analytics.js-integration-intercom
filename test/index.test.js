@@ -119,22 +119,24 @@ describe('Intercom', function() {
       });
 
       describe('page after identify', function() {
-        beforeEach(function () {
-          analytics.stub(analytics, 'user', function () { return {
-            id:function () { return 'id'},
-            anonymousId:function () { return 'anonymousId'},
-            traits:function () { return undefined}
-          }});
+        beforeEach(function() {
+          analytics.stub(analytics, 'user', function() {
+            return {
+              id:function() { return 'id';},
+              anonymousId:function() { return 'anonymousId';},
+              traits:function() { return undefined;}
+            };
+          });
         });
 
         it('should send an id', function() {
-            analytics.page();
-            analytics.called(window.Intercom, 'boot', {
-                app_id: options.appId,
-                id: 'id',
-                user_id: 'id',
-                anonymous_id: "anonymousId"
-            });
+          analytics.page();
+          analytics.called(window.Intercom, 'boot', {
+            app_id: options.appId,
+            id: 'id',
+            user_id: 'id',
+            anonymous_id: 'anonymousId'
+          });
         });
       });
     });

@@ -26,6 +26,7 @@ describe('Intercom', function() {
     analytics.use(Intercom);
     analytics.use(tester);
     analytics.add(intercom);
+    window.analytics = undefined;
   });
 
   afterEach(function(done) {
@@ -86,12 +87,54 @@ describe('Intercom', function() {
       it('should call boot first and update subsequently', function() {
         analytics.page();
         analytics.called(window.Intercom, 'boot', {
-          app_id: options.appId
+          app_id: options.appId,
+          anonymous_id: analytics.user().anonymousId()
         });
 
         analytics.page();
         analytics.called(window.Intercom, 'update', {
-          app_id: options.appId
+          app_id: options.appId,
+          anonymous_id: analytics.user().anonymousId()
+        });
+      });
+
+      it('should call boot if used with _boot', function() {
+        analytics.page();
+        analytics.called(window.Intercom, 'boot', {
+          app_id: options.appId,
+          anonymous_id: analytics.user().anonymousId()
+        });
+
+        analytics.page();
+        analytics.called(window.Intercom, 'update', {
+          app_id: options.appId,
+          anonymous_id: analytics.user().anonymousId()
+        });
+
+        analytics.page('_boot');
+        analytics.calledThrice(window.Intercom, 'boot', {
+          app_id: options.appId,
+          anonymous_id: analytics.user().anonymousId()
+        });
+      });
+
+      describe('page after identify', function() {
+        beforeEach(function () {
+          analytics.stub(analytics, 'user', function () { return {
+            id:function () { return 'id'},
+            anonymousId:function () { return 'anonymousId'},
+            traits:function () { return undefined}
+          }});
+        });
+
+        it('should send an id', function() {
+            analytics.page();
+            analytics.called(window.Intercom, 'boot', {
+                app_id: options.appId,
+                id: 'id',
+                user_id: 'id',
+                anonymous_id: "anonymousId"
+            });
         });
       });
     });
@@ -462,7 +505,8 @@ describe('Intercom', function() {
         analytics.page({}, integrationSettings);
         analytics.called(window.Intercom, 'boot', {
           app_id: options.appId,
-          hide_default_launcher: true
+          hide_default_launcher: true,
+          anonymous_id: analytics.user().anonymousId()
         });
       });
 

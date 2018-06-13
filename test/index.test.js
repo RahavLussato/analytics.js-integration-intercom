@@ -26,7 +26,6 @@ describe('Intercom', function() {
     analytics.use(Intercom);
     analytics.use(tester);
     analytics.add(intercom);
-    window.analytics = undefined;
   });
 
   afterEach(function(done) {
